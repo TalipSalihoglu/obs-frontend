@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yeni Kurs</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed top">
+    <a href="#" class="navbar-brand"><img src="img/Hogwarts-Logo.png" style="width: 60px;">Hogwarts</a>
+    <div id="" class="collapse navbar-collapse justify-content-center"> 
+        <ul class="navbar-nav"> 
+            <li class="nav-item"><a href="index.html" class="nav-link text-white">Anasayfa</a></li>
+            <li class="nav-item"><a href="student.html" class="nav-link  ml-4 text-white">Öğrenci Bilgileri</a></li>
+            <li class="nav-item"><a href="Courses.html" class="nav-link ml-4 text-white">Dersler</a></li>
+            <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">Öğretim Üyeleri</a></li>
+            <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">İletişim </a></li>
+            <li class="nav-item"><a href="Login.html" class="nav-link ml-4 text-white">Giriş Yap</a></li>
+        </ul>
+    </div>
+</nav>
+
+  <div class="container mt-5">
+    <form class="form-addCourse" id="addCourse">
+      <div class="checkbox mb-3">
+        <label>
+          <form class="form-addCourse">
+            <div id="server-results">
+              <!-- Sonucun yazılacağı alan-->
+            </div>
+            <div class="text-center mb-4">
+              <h1 class="h3 mt-3 mb-3 font-weight-normal">Yeni Ders Oluştur</h1>
+            </div>
+
+            <div class="form-label-group mb-3">
+              <input type="text" id="name" class="form-control" placeholder="name" required="" autofocus="">
+            </div>
+            <div class="form-group">
+              <label for="LecturerId">Dersin Öğretim Görevlisi</label>
+              <select id="lecturers" class="form-control">
+                <option></option>
+              </select>
+            </div>
+            <div class="form-label-group mb-3">
+              <input type="text" id="description" class="form-control" placeholder="description" required="">
+            </div>
+            <button id="submit" class="btn btn-md btn-primary btn-block mt-3" type="submit">Oluştur</button>
+          </form>
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    $(function () {
+      $.getJSON("https://localhost:7110/api/Lecturer/getall", function (result) {
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          var key = element.id;
+          var value = element.name + " " + element.lastName;
+          console.log(key, value);
+          $("#lecturers").append('<option value=' + key + '>' + value + '</option>');
+        }
+      })
+    })
+
+
+    var form = document.getElementById('addCourse')
+    form.addEventListener('submit', function (e) {
+      e.preventDefault()
+
+      var name = document.getElementById('name').value
+      var description = document.getElementById('description').value
+      var lecturerid = document.getElementById('lecturers').value
+      fetch('https://localhost:7110/api/Course/add', {
+        method: 'Post',
+        body: JSON.stringify({
+          name: name,
+          description: description,
+          lecturerId: lecturerid
+        }),
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+          'Authorization': localStorage.getItem("token")
+        }
+      })
+        .then(function (data) {
+          if (data.ok) {
+            alert("Kayıt oluşturuldu.")
+            location.href = 'Courses.html'
+          }
+          else {
+            console.log(data.Response)
+            alert(data)
+          }
+        })
+    })
+
+
+
+      // $("#addCourseForm1").submit(function (event) {
+      //   event.preventDefault(); //burada tıklanınca post işlemi yapmasın diye önlem alıyoruz
+      //   var post_url = "https://localhost:7110/api/Course/add";//$(this).attr("action"); //formun urlsi alınıyor
+      //   var request_method = $(this).attr("method"); //formun metodu alınıyor
+      //   var form_data = $(this).serialize(); //formun datası alınıyor
+      //   form_data = { Name: "test", Description: "test icin", LecturerId: 1 }
+      //   console.log(form_data)
+      //   $.ajax({
+      //     url: post_url,
+      //     type: request_method,
+      //     data: form_data,
+      //   }).done(function (response) { //
+      //     $("#server-results").html(response);
+      //   });
+      // });
+
+
+      // $("#my_form").submit(function (event) {
+      //   event.preventDefault();
+      //   var post_url = "https://localhost:7110/api/Course/add";
+      //   var form_data = $(this).serialize();
+
+      //   //form_data = { Name: "test", Description: "test icin", LecturerId: 1 }
+      //   console.log(form_data)
+      //   $.post(post_url, form_data, function (response) {
+      //     $("#server-results").html(response);
+      //   });
+      // });
+
+
+  </script>
+</body>
+
+</html>

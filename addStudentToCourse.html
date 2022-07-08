@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Kurs</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed top">
+        <a href="#" class="navbar-brand"><img src="img/Hogwarts-Logo.png" style="width: 60px;">Hogwarts</a>
+        <div id="" class="collapse navbar-collapse justify-content-center"> 
+            <ul class="navbar-nav"> 
+                <li class="nav-item"><a href="index.html" class="nav-link text-white">Anasayfa</a></li>
+                <li class="nav-item"><a href="student.html" class="nav-link  ml-4 text-white">Öğrenci Bilgileri</a></li>
+                <li class="nav-item"><a href="Courses.html" class="nav-link ml-4 text-white">Dersler</a></li>
+                <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">Öğretim Üyeleri</a></li>
+                <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">İletişim </a></li>
+                <li class="nav-item"><a href="Login.html" class="nav-link ml-4 text-white">Giriş Yap</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <form class="form-addCourse" id="addStudentToCourse">
+            <div class="checkbox mb-3">
+                <label>
+                    <form class="form-addCourse">
+                        <div id="server-results">
+                            <!-- Sonucun yazılacağı alan-->
+                        </div>
+                        <div class="text-center mb-4">
+                            <h1 class="h3 mt-3 mb-3 font-weight-normal">Öğrenci ders kayıt</h1>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="courses">Ders Listesi</label>
+                            <select id="courses" class="form-control">
+                                <option></option>
+                            </select>
+                        </div>     
+                        <div class="form-group">
+                            <label for="students">Öğrenci Listesi</label>
+                            <select id="students" class="form-control">
+                                <option></option>
+                            </select>
+                        </div>     
+                        <button id="submit" class="btn btn-md btn-primary btn-block mt-3" type="submit">Oluştur</button>
+                    </form>
+                </label>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(function () {
+            fetch('https://localhost:7110/api/Students/getall', {
+                method: 'Get',
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                    'Authorization': localStorage.getItem("token")
+                }
+            }).then(response=>{
+                return response.json();
+            })
+            .then(result => {
+                console.log(result)
+                for (let index = 0; index < result.length; index++) {
+                    const element = result[index];
+                    var key = element.id;
+                    var value = element.firstName + " " + element.lastName;
+                    console.log(key, value);
+                    $("#students").append('<option value=' + key + '>' + value + '</option>');
+                }
+            })
+        })
+
+
+        $(function () {
+            fetch('https://localhost:7110/api/Course/getall', {
+                method: 'Get',
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                    'Authorization': localStorage.getItem("token")
+                }
+            }).then(response=>{
+                return response.json();
+            })
+            .then(result => {
+                console.log(result)
+                for (let index = 0; index < result.length; index++) {
+                    const element = result[index];
+                    var key = element.id;
+                    var value = element.name;
+                    console.log(key, value);
+                    $("#courses").append('<option value=' + key + '>' + value + '</option>');
+                }
+            })
+        })
+        
+        var form = document.getElementById('addStudentToCourse')
+        form.addEventListener('submit', function (e) {
+            e.preventDefault()
+            var studentId = document.getElementById('students').value
+            var courseId = document.getElementById('courses').value
+
+            fetch('https://localhost:7110/api/StudentCourse/addStudentToCourse', {
+                method: 'Post',
+                body: JSON.stringify({
+                    StudentId:studentId,
+                    CourseId:courseId
+                }),
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                    'Authorization': localStorage.getItem("token")
+                }
+            }).then(function (data) {
+                if (data.ok) {
+                    alert("Kayıt oluşturuldu.")
+                    location.href = 'Courses.html'
+                }
+                else {
+                    console.log(data.Response)
+                    alert(data)
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

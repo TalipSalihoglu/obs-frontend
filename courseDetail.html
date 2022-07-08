@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed top">
+        <a href="#" class="navbar-brand"><img src="img/Hogwarts-Logo.png" style="width: 60px;">Hogwarts</a>
+        <div id="" class="collapse navbar-collapse justify-content-center"> 
+            <ul class="navbar-nav"> 
+                <li class="nav-item"><a href="index.html" class="nav-link text-white">Anasayfa</a></li>
+                <li class="nav-item"><a href="student.html" class="nav-link  ml-4 text-white">Öğrenci Bilgileri</a></li>
+                <li class="nav-item"><a href="Courses.html" class="nav-link ml-4 text-white">Dersler</a></li>
+                <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">Öğretim Üyeleri</a></li>
+                <li class="nav-item"><a href="#" class="nav-link ml-4 text-white">İletişim </a></li>
+                <li class="nav-item"><a href="Login.html" class="nav-link ml-4 text-white">Giriş Yap</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="col-sm-2">
+        <button type="button" class="btn btn-outline-primary"><a href="addStudentToCourse.html">Derse Öğrenci ekle</a></button>
+      </div>
+    <div class="container col-9 mt-3">
+        <table class="table text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Ders Adı</th>
+                    <th scope="col">Açıklama</th>
+                </tr>
+            </thead>
+            <tbody id="result">
+            </tbody>
+        </table>
+        <br>
+        <table class="table text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Öğrenci Adı Soyadı</th>
+                    <th scope="col">E-mail Adresi</th>
+                </tr>
+            </thead>
+            <tbody id="result2">
+            </tbody>
+        </table>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var id = window.location.search.split("=")[1]
+        $(function () {
+            $.getJSON("https://localhost:7110/api/Course/get?id=" + id, function (result) {
+                var students = result.students
+                $("#result").append(`
+                    <tr>
+                        <td>${result.name}</td>
+                        <td>${result.description}</td>                
+                    </tr>
+                `)
+                students.forEach(element => {
+                    $("#result2").append(`
+                        <tr>
+                            <td>${element.firstName} ${element.lastName}</td>
+                            <td>${element.email}</td>                
+                        </tr>
+                    `)
+
+                });
+
+            })
+        })
+
+    </script>
+</body>
+
+</html>
